@@ -45,7 +45,7 @@ body {
 
 .form-row {
     display: flex;
-    align-items: flex-start;
+    align-items: baseline;
     margin-bottom: 3px;
 }
 
@@ -136,7 +136,6 @@ body {
     gap: 10px;
     margin-bottom: 5px;
     background-color: #3a3a3a;
-    padding: 8px 12px;
 }
 
 .seat-type-item:last-child {
@@ -144,7 +143,7 @@ body {
 }
 
 .seat-type-item .form-text-small {
-    flex: 1; /* 너비를 유연하게 */
+    flex: 0.7; /* 너비를 유연하게 */
     min-width: 100px; /* 최소 너비 */
 }
 
@@ -174,7 +173,6 @@ body {
     border-radius: 4px;
     cursor: pointer;
     font-size: 13px;
-    margin-top: 10px;
     transition: background-color 0.2s;
 }
 .btn-add-seat-type:hover {

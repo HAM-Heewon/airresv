@@ -100,16 +100,13 @@
                         <div id="seatTypeContainer" style="width: 100%;">
                             <!-- 좌석 형태와 가격 입력 필드가 동적으로 추가될 영역 -->
                             <div class="seat-type-item">
-                                <input type="text" class="form-text-small seat-type-name" placeholder="좌석 형태명 (예: 일반석)">
+                                <input type="text" class="form-text-small seat-type-name" placeholder="좌석 형태명 (예: 일반석, 프레스티지석, 일등석, 비지니스석)">
                                 <input type="number" class="form-text-number seat-type-price" placeholder="가격" min="0" step="100">
                                 <span class="unit">원</span>
                                 <button type="button" class="btn-remove-seat" onclick="removeSeatTypeField(this)">삭제</button>
                             </div>
                         </div>
                         <button type="button" class="btn-add-seat-type" onclick="addSeatTypeField()">+ 좌석 형태 추가</button>
-                        <span class="input-note" style="margin-top: 5px; width: 100%;">
-                            ※ 예시: 일반석, 프레스티지석, 일등석, 비지니스석.
-                        </span>
                     </div>
                 </div>
                 
@@ -185,100 +182,32 @@ function openCodeManager() {
     location.href = '/air_newcode';
 }
 
-// 폼 제출 처리
-function submitForm(event) {
-    if (event) {
-        event.preventDefault();
+//좌석 형태 및 가격 필드 추가 함수
+function addSeatTypeField() {
+    const container = document.getElementById('seatTypeContainer');
+    const newSeatTypeItem = document.createElement('div');
+    newSeatTypeItem.className = 'form-input seat-type-item'; // .form-input 클래스도 추가하여 스타일 일관성 유지
+
+    newSeatTypeItem.innerHTML = `
+        <input type="text" class="form-text-small seat-type-name" placeholder="좌석 형태명 (예: 일반석, 프레스티지석, 일등석, 비지니스석)">
+        <input type="number" class="form-text-number seat-type-price" placeholder="가격" min="0" step="100">
+        <span class="unit">원</span>
+        <button type="button" class="btn-remove-seat" onclick="removeSeatTypeField(this)">삭제</button>
+    `;
+    container.appendChild(newSeatTypeItem);
+}
+
+// 좌석 형태 및 가격 필드 제거 함수
+function removeSeatTypeField(button) {
+    const itemToRemove = button.parentNode;
+    const container = document.getElementById('seatTypeContainer');
+    
+    // 마지막 남은 필드는 삭제 못하게 (최소 하나는 있어야 함)
+    if (container.children.length > 1) {
+        container.removeChild(itemToRemove);
+    } else {
+        alert('최소 하나의 좌석 형태는 등록해야 합니다.');
     }
-    
-    // 유효성 검사
-    const airlineCode = document.getElementById('airlineCode').value;
-    const airlineName = document.getElementById('airlineName').value;
-    const flightCode = document.getElementById('flightCode').value;
-    const flightName = document.getElementById('flightName').value;
-    const departure = document.getElementById('departure').value;
-    const arrival = document.getElementById('arrival').value;
-    const seatClass = document.getElementById('seatClass').value;
-    const seatCount = document.getElementById('seatCount').value;
-    
-    // 필수 입력값 검사
-    if (!airlineCode) {
-        alert('항공코드를 선택해주세요.');
-        document.getElementById('airlineCode').focus();
-        return false;
-    }
-    
-    if (!airlineName) {
-        alert('항공사명을 선택해주세요.');
-        document.getElementById('airlineName').focus();
-        return false;
-    }
-    
-    if (!flightCode) {
-        alert('항공편코드를 선택해주세요.');
-        document.getElementById('flightCode').focus();
-        return false;
-    }
-    
-    if (!flightName.trim()) {
-        alert('항공편명을 입력해주세요.');
-        document.getElementById('flightName').focus();
-        return false;
-    }
-    
-    if (!departure.trim()) {
-        alert('출발지를 입력해주세요.');
-        document.getElementById('departure').focus();
-        return false;
-    }
-    
-    if (!arrival.trim()) {
-        alert('도착지를 입력해주세요.');
-        document.getElementById('arrival').focus();
-        return false;
-    }
-    
-    // 출발지와 도착지 중복 검사
-    if (departure.trim() === arrival.trim()) {
-        alert('출발지와 도착지가 같을 수 없습니다.');
-        document.getElementById('arrival').focus();
-        return false;
-    }
-    
-    if (!seatClass.trim()) {
-        alert('좌석한대를 입력해주세요.');
-        document.getElementById('seatClass').focus();
-        return false;
-    }
-    
-    if (!seatCount || parseInt(seatCount) < 0) {
-        alert('좌석수를 올바르게 입력해주세요.');
-        document.getElementById('seatCount').focus();
-        return false;
-    }
-    
-    // 폼 데이터 수집
-    const formData = {
-        airlineCode: airlineCode,
-        airlineName: airlineName,
-        flightCode: flightCode,
-        flightName: flightName.trim(),
-        departure: departure.trim(),
-        arrival: arrival.trim(),
-        seatClass: seatClass.trim(),
-        seatCount: parseInt(seatCount),
-        flightTime: document.querySelector('input[name="flightTime"]:checked').value
-    };
-    
-    console.log('등록할 항공편 데이터:', formData);
-    
-    // 실제 구현시 AJAX로 서버에 전송
-    if (confirm('신규 항공편을 등록하시겠습니까?')) {
-        alert('항공편이 성공적으로 등록되었습니다.');
-        location.href = '/admin/airlines';
-    }
-    
-    return false;
 }
 
 // 항공사명 변경시 항공편코드 자동 설정
