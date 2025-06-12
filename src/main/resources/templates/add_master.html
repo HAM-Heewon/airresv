@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>신규 관리자 등록요청</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/newadmin.css">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <i class="fas fa-user-shield admin-icon"></i>
+        <span class="admin-text">ADMINISTRATOR ADD</span>
+    </div>
+    <div class="form-box">
+        <form action="#" method="post">
+            <h3 class="section-title">아이디 및 패스워드 정보</h3>
+            
+            <div class="form-group">
+                <div class="id-row">
+                    <input type="text" name="admin_id" placeholder="생성할 관리자 아이디를 입력하세요">
+                    <button type="button" class="check-btn">중복확인</button>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group half">
+                    <input type="password" name="admin_pw" placeholder="접속할 패스워드를 입력하세요">
+                </div>
+                <div class="form-group half">
+                    <input type="password" name="admin_pw_confirm" placeholder="동일한 패스워드를 입력하세요">
+                </div>
+            </div>
+
+            <h3 class="section-title">관리자 기본정보 입력</h3>
+            
+            <div class="form-group">
+                <input type="text" name="admin_name" placeholder="담당자 이름을 입력하세요">
+            </div>
+            
+            <div class="form-group">
+                <input type="text" name="admin_department" placeholder="담당자 이메일을 입력하세요">
+            </div>
+            
+            <div class="form-group">
+                <div class="phone-row">
+                    <input type="number" name="phone1" placeholder="010" maxlength="3" class="phone-input">
+                    <span class="phone-separator">-</span>
+                    <input type="number" name="phone2" placeholder="1234" maxlength="4" class="phone-input">
+                    <span class="phone-separator">-</span>
+                    <input type="number" name="phone3" placeholder="5678" maxlength="4" class="phone-input">
+                </div>
+            </div>
+
+            <h3 class="section-title">관리자 담당부서 및 직책</h3>
+            
+            <div class="form-row">
+                <div class="form-group half">
+                    <select name="department">
+                        <option value="">담당자 부서를 선택하세요</option>
+                        <option value="총무">총무</option>
+                        <option value="인사">인사</option>
+                        <option value="마케팅">마케팅</option>
+                        <option value="개발">개발</option>
+                    </select>
+                </div>
+                <div class="form-group half">
+                    <select name="position">
+                        <option value="">담당자 직책을 선택하세요</option>
+                        <option value="사원">사원</option>
+                        <option value="대리">대리</option>
+                        <option value="과장">과장</option>
+                        <option value="차장">차장</option>
+                        <option value="부장">부장</option>
+                    </select>
+                </div>
+            </div>
+
+            <p class="info-text">
+                <i class="fas fa-exclamation-triangle"></i> 가입완료 후 전사 담당자가 확인 후 승인할 수 있습니다.
+            </p>
+
+            <div class="button-row">
+                <button type="submit" class="btn btn-primary">관리자 등록</button>
+                <button type="button" class="btn btn-secondary" onclick="location.href='Login'">등록 취소</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
