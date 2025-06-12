@@ -11,50 +11,13 @@
 <div th:fragment="menu" class="menu">
     <a href="/siteinfo" class="menu-item">사이트 기본설정</a>
     <a href="/admin_list" class="menu-item">회원관리</a>
-    <a href="/admin/notices" class="menu-item">공지사항</a>
-    <a href="/admin/agreements" class="menu-item">협정서 및 변호 등록</a>
-    <a href="/admin/reservations" class="menu-item">좌석 및 예매등록</a>
-    <a href="/admin/booking-list" class="menu-item">예매 리스트</a>
-    <a href="/admin/faq" class="menu-item">고객관리 FAQ</a>
+    <a href="/notice" class="menu-item">공지사항</a>
+    <a href="/product_list" class="menu-item">항공편 관리</a>
+    <a href="/code_list" class="menu-item">항공 코드 관리</a>
+    <a href="/seat_list" class="menu-item">좌석 및 예약설정</a>
+    <a href="/ticketing_list" class="menu-item">예매 리스트</a>
+    <a href="/faq_list" class="menu-item">고객관리 FAQ</a>
 </div>
-<script>
-// JavaScript로만 활성 메뉴 설정 (Spring Boot 최신 버전 대응)
-document.addEventListener('DOMContentLoaded', function() {
-    const currentPath = window.location.pathname;
-    const menuItems = document.querySelectorAll('.menu-item');
-    
-    ////console.log('Current path:', currentPath); // 디버깅용
-    
-    menuItems.forEach(item => {
-        // 모든 메뉴에서 active 클래스 제거
-        item.classList.remove('active');
-        
-        const href = item.getAttribute('href');
-        ////console.log('Checking menu:', href); // 디버깅용
-        
-        // 현재 경로와 메뉴 href가 일치하면 active 추가
-        if (href === currentPath) {
-            item.classList.add('active');
-            ////console.log('Active menu set for:', href); // 디버깅용
-        }
-    });
-    
-    // 혹시 정확한 매칭이 안 될 경우를 위한 fallback
-    // 예: /siteinfo/ 같은 trailing slash 문제 해결
-    if (!document.querySelector('.menu-item.active')) {
-        menuItems.forEach(item => {
-            const href = item.getAttribute('href');
-            // 경로 끝의 슬래시 제거 후 비교
-            const normalizedHref = href.replace(/\/$/, '');
-            const normalizedPath = currentPath.replace(/\/$/, '');
-            
-            if (normalizedHref === normalizedPath) {
-                item.classList.add('active');
-                ////console.log('Fallback active menu set for:', href);
-            }
-        });
-    }
-});
-</script>
+
 </body>
 </html>

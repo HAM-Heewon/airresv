@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>항공편 관리</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="./css/head_menu.css">
+<link rel="stylesheet" type="text/css" href="./css/product_list.css">
+</head>
+<body>
+<div class="container">
+    <div th:replace="admin_header :: header"></div>
+    
+    <div th:replace="admin_menu :: menu"></div>
+    
+    <!-- 메인 콘텐츠 -->
+    <div class="content">
+        <h2 class="section-title">항공편 관리 페이지</h2>
+        
+        <!-- 검색 영역 -->
+        <div class="search-container">
+            <div class="search-content">
+                <div class="search-info">등록된 항공사 0건</div>
+                <div class="search-box">
+                    <select class="search-select">
+                        <option value="airline_name">항공사명</option>
+                    </select>
+                    <input type="text" class="search-input" placeholder="검색어를 입력해 주세요">
+                    <button type="button" class="search-btn">검색</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 항공편 테이블 -->
+        <table class="airline-table">
+            <thead>
+                <tr>
+                    <th class="checkbox-col">
+                        <input type="checkbox" id="selectAll" onchange="toggleAll(this)">
+                    </th>
+                    <th class="code-col">공항코드</th>
+                    <th class="name-col">항공사명</th>
+                    <th class="flight-code-col">항공코드</th>
+                    <th class="flight-name-col">항공편명</th>
+                    <th class="departure-col">출발지</th>
+                    <th class="arrival-col">도착지</th>
+                    <th class="capacity-col">좌석형태</th>
+                    <th class="price-col">좌석수</th>
+                    <th class="available-col">비행사항</th>
+                    <th class="manage-col">관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 데이터가 없을 때 -->
+                <tr class="no-data-row">
+                    <td colspan="11" class="no-data">등록된 항공편이 없습니다.</td>
+                </tr>
+                
+                <!-- 샘플 데이터 -->
+                <tr style="display: none;">
+                    <td><input type="checkbox" name="airlineIds" value="1"></td>
+                    <td>GMP</td>
+                    <td>대한항공</td>
+                    <td>KE017</td>
+                    <td>Korean Air</td>
+                    <td>한국</td>
+                    <td>중국</td>
+                    <td>일반석</td>
+                    <td>80</td>
+                    <td>Y</td>
+                    <td>
+                        <button type="button" class="btn-small btn-edit" onclick="editAirline(1)">수정</button>
+                        <button type="button" class="btn-small btn-delete" onclick="deleteAirline(1)">삭제</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- 페이지네이션 -->
+        <div class="pagination">
+            <a href="#">«</a>
+            <a href="#">‹</a>
+            <span class="current">1</span>
+            <a href="#">›</a>
+            <a href="#">»</a>
+        </div>
+        
+        <!-- 버튼 그룹 -->
+        <div class="button-group">
+            <div class="btn_left">
+            <button type="button" class="btn btn-secondary" onclick="deleteSelected()">선택항공편 삭제</button>
+            </div>
+            <div class="btn_right">
+            <button type="button" class="btn btn-primary" onclick="location.href='/product_new'">신규항공편 등록</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 메뉴 활성화 스크립트
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    // 모든 메뉴에서 active 클래스 제거
+    menuItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // 항공편 관리 메뉴 활성화
+    menuItems.forEach(item => {
+        const href = item.getAttribute('href');
+        
+        if (href === '/product_list' || href.includes('airlines')) {
+            item.classList.add('active');
+        }
+    });
+});
+
+// 전체 선택/해제
+function toggleAll(source) {
+    const checkboxes = document.querySelectorAll('input[name="airlineIds"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = source.checked;
+    });
+}
+
+// 선택된 항목 삭제
+function deleteSelected() {
+    const checkedBoxes = document.querySelectorAll('input[name="airlineIds"]:checked');
+    
+    if (checkedBoxes.length === 0) {
+        alert('삭제할 항공편을 선택해주세요.');
+        return;
+    }
+    
+    if (confirm(`선택된 ${checkedBoxes.length}개의 항공편을 삭제하시겠습니까?`)) {
+        // 실제 구현시 AJAX로 삭제 처리
+        alert('선택된 항공편이 삭제되었습니다.');
+        location.reload();
+    }
+}
+
+// 개별 항목 수정
+function editAirline(id) {
+    location.href = `/admin/airlines/edit/${id}`;
+}
+
+// 개별 항목 삭제
+function deleteAirline(id) {
+    if (confirm('이 항공편을 삭제하시겠습니까?')) {
+        // 실제 구현시 AJAX로 삭제 처리
+        alert('항공편이 삭제되었습니다.');
+        location.reload();
+    }
+}
+
+// 검색 기능
+document.querySelector('.search-btn').addEventListener('click', function() {
+    const searchType = document.querySelector('.search-select').value;
+    const searchKeyword = document.querySelector('.search-input').value.trim();
+    
+    if (!searchKeyword) {
+        alert('검색어를 입력해주세요.');
+        return;
+    }
+    
+    // 실제 구현시 검색 로직 추가
+    console.log('검색 타입:', searchType);
+    console.log('검색어:', searchKeyword);
+    
+    // 샘플 데이터 표시/숨김 (실제로는 서버에서 데이터 조회)
+    const noDataRow = document.querySelector('.no-data-row');
+    const sampleRow = document.querySelector('tr[style="display: none;"]');
+    
+    if (searchKeyword.includes('GMP') || searchKeyword.includes('대한') || searchKeyword.includes('KE017')) {
+        noDataRow.style.display = 'none';
+        sampleRow.style.display = 'table-row';
+        document.querySelector('.search-info').textContent = '등록된 항공사 1건';
+    } else {
+        noDataRow.style.display = 'table-row';
+        sampleRow.style.display = 'none';
+        document.querySelector('.search-info').textContent = '등록된 항공사 0건';
+    }
+});
+
+// 엔터키 검색
+document.querySelector('.search-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        document.querySelector('.search-btn').click();
+    }
+});
+</script>
+</body>
+</html>

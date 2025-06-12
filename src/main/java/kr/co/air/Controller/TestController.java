@@ -35,6 +35,70 @@ public class TestController {
     	return "siteinfo.html";
     }
     
+    @GetMapping("/notice")
+    public String notice() {
+    	return "notice_list.html";
+    }
+    
+    @GetMapping("/notice_write")
+    public String notice_write() {
+    	return "notice_write.html";
+    }
+    
+    @GetMapping("/notice_view")
+    public String notice_view() {
+    	return "notice_view.html";
+    }
+    
+    @GetMapping("/notice_update")
+    public String notice_update() {
+    	return "notice_update.html";
+    }
+    
+    @GetMapping("/product_list")
+    public String product_list() {
+    	return "product_list.html";
+    }
+    
+    @GetMapping("/product_new")
+    public String product_new() {
+    	return "product_new.html";
+    }
+
+    @GetMapping("/air_newcode")
+    public String air_newcode() {
+    	return "air_newcode.html";
+    }
+
+    @GetMapping("/code_list")
+    public String code_list() {
+    	return "code_list.html";
+    }
+    @GetMapping("/code_update")
+    public String code_update() {
+    	return "code_update.html";
+    }
+    
+    @GetMapping("/ticketing_list")
+    public String ticketing_list() {
+    	return "ticketing_list.html";
+    }
+    @GetMapping("/seat_list")
+    public String seat_list() {
+    	return "seat_list.html";
+    }
+    @GetMapping("/faq_list")
+    public String faq_list() {
+    	return "faq_list.html";
+    }
+    @GetMapping("/faq_write")
+    public String faq_write() {
+    	return "faq_write.html";
+    }
+    @GetMapping("/faq_update")
+    public String faq_update() {
+    	return "faq_update.html";
+    }
     
     @GetMapping("/login")
     public String login() {

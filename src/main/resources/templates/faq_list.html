@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>고객관리 FAQ</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="./css/head_menu.css">
+<link rel="stylesheet" type="text/css" href="./css/faq_list.css">
+</head>
+<body>
+<div class="container">
+   <div th:replace="admin_header :: header"></div>
+
+   <div th:replace="admin_menu :: menu"></div>
+   
+<div class="content">
+    <h2 class="section-title">FAQ 관리페이지</h2>
+    
+    <!-- 검색 섹션 -->
+    <div class="search-section">
+        <div class="search-form">
+            <span style="color: #e0e0e0; margin-right: 10px;">FAQ 모든 내용 검색</span>
+            <input type="text" class="search-input" id="searchKeyword" placeholder="">
+            <button type="button" class="btn-search" onclick="searchFAQ()">검색</button>
+        </div>
+    </div>
+    
+    <!-- 데이터 테이블 -->
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">QA</th>
+                    <th style="width: 400px;">등록/답변</th>
+                    <th style="width: 100px;">등록일</th>
+                    <th style="width: 100px;">등록일</th>
+                    <th style="width: 80px;">삭제</th>
+                </tr>
+            </thead>
+            <tbody id="dataTableBody">
+                <tr>
+                    <td>Q</td>
+                    <td style="text-align: left;">FAQ 등록사항 등록 1</td>
+                    <td>관리자</td>
+                    <td>2023-12-21</td>
+                    <td><span class="status-badge status-active">삭제</span></td>
+                </tr>
+                <tr>
+                    <td>Q</td>
+                    <td style="text-align: left;">FAQ 등록사항 등록 2</td>
+                    <td>관리자</td>
+                    <td>2023-12-19</td>
+                    <td><span class="status-badge status-active">삭제</span></td>
+                </tr>
+                <tr>
+                    <td colspan="5" class="no-data">등록된 FAQ 내용 없습니다.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- 페이징 -->
+        <!-- 페이지네이션 -->
+        <div class="pagination">
+            <a href="#">«</a>
+            <a href="#">‹</a>
+            <span class="current">1</span>
+            <a href="#">›</a>
+            <a href="#">»</a>
+        </div>
+    
+    <!-- 하단 액션 버튼 -->
+    <div class="bottom-actions">
+        <button type="button" class="btn-register" onclick="location.href='/faq_write'">FAQ 등록</button>
+        </div>
+    </div>
+</div>
+<script>
+// 검색 기능
+function searchFAQ() {
+    const searchKeyword = document.getElementById('searchKeyword').value.trim();
+    
+    console.log('FAQ 검색어:', searchKeyword);
+    
+    if (searchKeyword === '') {
+        alert('검색어를 입력해주세요.');
+        return;
+    }
+    
+    // 실제 검색 로직 구현
+    loadSearchResults(searchKeyword);
+}
+
+//메뉴 활성화 스크립트
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    // 모든 메뉴에서 active 클래스 제거
+    menuItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // 항공편 관리 메뉴 활성화
+    menuItems.forEach(item => {
+        const href = item.getAttribute('href');
+        
+        if (href === '/faq_list' || href.includes('faq')) {
+            item.classList.add('active');
+        }
+    });
+});
+</script>
+</body>
+</html>
