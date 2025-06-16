@@ -1,38 +1,57 @@
 package kr.co.air.Controller;
 
-import java.util.List;
+import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import kr.co.air.Service.AdminListService;
 import kr.co.air.dtos.UsersDto;
-import kr.co.air.mapper.AirMapper;
+import kr.co.air.mapper.UserMapper;
+import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
-	private final AirMapper airmapper;
-	
-    @Autowired
-    public UserController(AirMapper airmapper) {
-        this.airmapper = airmapper;
-    }
+    private final AdminListService adminListService;
+    private final UserMapper usermapper;
     
-    @GetMapping
-    public String listUsers(Model m) {
-        // UserMapper를 사용하여 모든 사용자 정보를 데이터베이스에서 조회합니다.
-        List<UsersDto> users = airmapper.findusers();
+    @GetMapping("/login")
+    public String loginPage(Model model, 
+                           @RequestParam(value = "error", required = false) String error,
+                           @RequestParam(value = "message", required = false) String message) {
         
-        // 조회된 사용자 목록을 Model 객체에 담아 뷰로 전달합니다.
-        m.addAttribute("users", users);
+        // message 파라미터에서 실제 에러 메시지 가져오기
+        if (message != null && !message.isEmpty()) {
+            model.addAttribute("loginError", message);
+        }
         
-        // "userList"라는 뷰 이름을 반환합니다.
-        // Thymeleaf 설정에 따라 src/main/resources/templates/userList.html 파일을 찾게 됩니다.
-        return "/userList.html";
+        return "login";
+    }
+
+    @GetMapping("/admin_list")
+    public String adminListPage(Model m, Authentication auth) {
+    	Map<String, Object> alldata = adminListService.getAdminPageData(auth);
+    	String username = auth.getName();
+    	UsersDto userdata = usermapper.findByUsername(username);
+    	m.addAttribute("userdata",userdata);
+    	
+        m.addAttribute("adminList", alldata.get("adminList"));
+        m.addAttribute("isTopLevelAdmin", alldata.get("isTopLevelAdmin"));
+    	
+        return "admin_list";
+    }
+
+    // 3. '신규 관리자 등록요청' 링크를 위한 페이지
+    @GetMapping("/add_master")
+    public String addMasterPage() {
+        return "add_master";
     }
 }
 	

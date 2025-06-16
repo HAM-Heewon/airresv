@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="UTF-8">
 <title>헤더</title>
@@ -13,9 +14,14 @@
             <span class="admin-text">ADMINISTRATOR</span>
         </div>
         <div class="header-right">
-            총관리자 관리자 
+            <span style="color: #4CAF50; font-weight: bold;" sec:authentication="principal.usersDto.adminNm"></span>
+            <span>님 환영합니다.</span> 
             <a href="#">[개인정보 수정]</a> 
-            <a href="/">[로그아웃]</a>
+             <form th:action="@{/logout}" method="post">
+                <button type="submit" class="logout-btn">
+                    [로그아웃]
+                </button>
+            </form>
         </div>
     </div>
 </body>

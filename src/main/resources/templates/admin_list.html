@@ -16,7 +16,7 @@
     <!-- 메인 콘텐츠 -->
     <div class="content">
         <h2 class="section-title">신규등록 관리자</h2>
-        
+
         <table class="admin-table">
             <thead>
                 <tr>
@@ -27,7 +27,6 @@
                     <th>이메일</th>
                     <th>담당부서</th>
                     <th>담당직책</th>
-                    <th>가입일자</th>
                     <th>승인여부</th>
                 </tr>
             </thead>
@@ -40,16 +39,27 @@
                 <!-- 관리자 목록 -->
                 <tr th:each="admin, iterStat : ${adminList}">
                     <td th:text="${iterStat.count}">1</td>
-                    <td th:text="${admin.name}">한석봉</td>
-                    <td th:text="${admin.userId}">hansbong</td>
-                    <td th:text="${admin.phoneNumber}">01012345678</td>
-                    <td th:text="${admin.email}">hansbong@hanmail.net</td>  
-                    <td th:text="${admin.department}">디자인팀</td>
-                    <td th:text="${admin.position}">주임</td>
-                    <td th:text="${admin.joinDate}">2022-08-12</td>
+                    <td th:text="${admin.adminNm}">관리자 이름</td>
+                    <td th:text="${admin.adminId}">관리자 아이디</td>
+                    <td th:text="${admin.adminTel}">전화번호</td>
+                    <td th:text="${admin.adminEmail}">이메일</td>  
+                    <td th:text="${admin.department}">담당부서</td>
+                    <td th:text="${admin.positionName}">담당직책</td>
+                    
                     <td>
-                        <button class="btn-small btn-approve" th:onclick="'approveAdmin(' + ${admin.id} + ')'">승인</button>
-                        <button class="btn-small btn-reject" th:onclick="'rejectAdmin(' + ${admin.id} + ')'">미승인</button>
+                        <th:block th:if="${isTopLevelAdmin and admin.adminAgree == 'P'}">
+                            <button th:if="${admin.adminAgree == 'P'}" class="btn-real btn-small btn-approve" th:onclick="'approveAdmin(' + ${admin.adIdx} + ')'">승인</button>
+                            <button th:if="${admin.adminAgree == 'P'}" class="btn-real btn-small btn-reject" th:onclick="'rejectAdmin(' + ${admin.adIdx} + ')'">미승인</button>
+                        </th:block>
+                        <th:block th:if="${isTopLevelAdmin and admin.adminAgree != 'P'}">
+                            <span th:if="${admin.adminAgree == 'Y'}" class="btn-small btn-approve">승인</span>
+                            <span th:if="${admin.adminAgree == 'N'}" class="btn-small btn-reject">미승인</span>
+                        </th:block>
+                        <th:block th:unless="${isTopLevelAdmin}">
+                            <span th:if="${admin.adminAgree == 'Y'}" class="btn-small btn-approve">승인</span>
+                            <span th:if="${admin.adminAgree == 'N'}" class="btn-small btn-reject">미승인</span>
+                            <span th:if="${admin.adminAgree == 'P'}" class="btn-small btn-p">대기</span>
+                        </th:block>
                     </td>
                 </tr>
             </tbody>
@@ -61,15 +71,13 @@
 <script>
 function approveAdmin(adminId) {
     if(confirm('관리자를 승인하시겠습니까?')) {
-        // AJAX 요청 또는 폼 제출
-        location.href = '/admin/approve/' + adminId;
+        location.href = '/admin/Yadmin/' + adminId;
     }
 }
 
 function rejectAdmin(adminId) {
     if(confirm('관리자 승인을 거부하시겠습니까?')) {
-        // AJAX 요청 또는 폼 제출
-        location.href = '/admin/reject/' + adminId;
+        location.href = '/admin/Nadmin/' + adminId;
     }
 }
 
@@ -77,8 +85,6 @@ function rejectAdmin(adminId) {
 document.addEventListener('DOMContentLoaded', function() {
     const currentPath = window.location.pathname;
     const menuItems = document.querySelectorAll('.menu-item');
-    
-    console.log('Current path:', currentPath);
     
     // 모든 메뉴에서 active 클래스 제거
     menuItems.forEach(item => {
@@ -88,10 +94,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 현재 경로에 맞는 메뉴 활성화
     menuItems.forEach(item => {
         const href = item.getAttribute('href');
-        
         if (href === currentPath || href === '/admin_list') {
             item.classList.add('active');
-            console.log('✅ Active menu set for:', href);
         }
     });
 });
