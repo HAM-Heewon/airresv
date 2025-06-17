@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="menu">
 <head>
     <meta charset="UTF-8">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -8,7 +9,7 @@
 </head>
 <body>
 <!-- 메뉴 Fragment -->
-<div th:fragment="menu" class="menu">
+<div class="menu">
     <a href="/siteinfo" class="menu-item">사이트 기본설정</a>
     <a href="/admin_list" class="menu-item">회원관리</a>
     <a href="/notice" class="menu-item">공지사항</a>
@@ -20,4 +21,5 @@
 </div>
 
 </body>
+</th:block>
 </html>

@@ -16,11 +16,6 @@ public class AirController {
     	return "/Login";
     }
     
-    @GetMapping("/siteinfo")
-    public String siteinfo() {
-    	return "siteinfo";
-    }
-    
     @GetMapping("/notice")
     public String notice() {
     	return "notice_list";

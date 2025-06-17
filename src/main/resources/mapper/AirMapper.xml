@@ -39,4 +39,22 @@ ORDER BY AD_IDX DESC
     WHERE AD_IDX = #{adIdx}
 </update>
 
+<!-- 관리자 등록 요청(회원가입) -->
+<insert id="insertAdmin" parameterType="kr.co.air.dtos.UsersDto">
+    INSERT INTO ADMIN_USERS(ADMIN_ID, ADMIN_PW, ADMIN_NM, ADMIN_TEL, ADMIN_EMAIL, DEPARTMENT,POSITION_CODE,ADMIN_AGREE)
+    VALUES(
+        #{adminId},
+        #{adminPw},
+        #{adminNm},
+        #{adminTel},
+        #{adminEmail},
+        #{department},
+        #{positionCode},
+        #{adminAgree}
+    )
+</insert>
+<!-- 관리자 신규 등록 아이디 중복확인 -->
+<select id="checkid" parameterType="String" resultType="int">
+    SELECT COUNT(*) FROM ADMIN_USERS WHERE ADMIN_ID = #{adminId}
+</select>
 </mapper>

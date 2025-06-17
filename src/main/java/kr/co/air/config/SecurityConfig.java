@@ -1,9 +1,11 @@
 package kr.co.air.config;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,7 +23,9 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/add_master", "/login").permitAll()  // /login 추가
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/ico/**", "/static/**").permitAll()
+                // 회원가입 페이지 경로와 아이디 중복확인 API 경로는 모두 허용
+                .requestMatchers("/add_master", "/logon", "/admin_req", "/admin/check_id").permitAll() 
                 .requestMatchers("/admin_list").authenticated() 
                 .anyRequest().authenticated()
             )

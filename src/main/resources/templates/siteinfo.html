@@ -15,7 +15,7 @@
     
     <!-- 메인 콘텐츠 -->
     <div class="content">
-        <form>
+        <form method="post" th:action="@{/siteinfo}" th:object="${sitedata}">
             <!-- 홈페이지 기본환경 설정 -->
             <div class="settings-section">
                 <div class="section-header">홈페이지 기본환경 설정</div>
@@ -23,14 +23,14 @@
                     <div class="form-row">
                         <div class="form-label">홈페이지 제목</div>
                         <div class="form-input">
-                            <input type="text" class="input-large" value="">
+                            <input type="text" class="input-large" th:field="*{cSitename}" th:readonly="${!adminlevel}">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-label">관리자 메일 주소</div>
                         <div class="form-input">
-                            <input type="email" class="input-medium" value="">
-                            <span class="description">※ 관리자가 보내고 받는 메일로 사용하는 메일 주소를 입력합니다.(회원가입,민원메일,회원메일발송 등에서 사용)</span>
+                            <input type="email" class="input-medium" th:field="*{cAdminmail}"  th:readonly="${!adminlevel}">
+                            <span class="description">※ 관리자가 보내고 받는 용도로 사용하는 메일 주소를 입력합니다.(회원가입,인증메일,회원메일발송 등에서 사용)</span>
                         </div>
                     </div>
                     <div class="form-row">
@@ -38,12 +38,12 @@
                         <div class="form-input">
                             <div class="radio-group">
                                 <div class="radio-item">
-                                    <input type="radio" id="point_use" name="point_usage" value="use">
-                                    <label for="point_use">포인트 사용</label>
+                                    <input type="radio" th:field="*{cPointuse}" value="Y" th:disabled="${!adminlevel}">
+                                    <label th:for="${#ids.prev('cPointuse')}">포인트 사용</label>
                                 </div>
                                 <div class="radio-item">
-                                    <input type="radio" id="point_not_use" name="point_usage" value="not_use" checked>
-                                    <label for="point_not_use">포인트 미사용</label>
+                                    <input type="radio" th:field="*{cPointuse}" value="N" th:disabled="${!adminlevel}">
+                                    <label th:for="${#ids.prev('cPointuse')}">포인트 미사용</label>
                                 </div>
                             </div>
                         </div>
@@ -51,10 +51,10 @@
                     <div class="form-row">
                         <div class="form-input">
                             <div class="form-label">회원가입시 적립금</div>
-                            <input type="text" class="input-small" value="">
+                            <input type="text" class="input-small" th:field="*{cNewmoney}" th:readonly="${!adminlevel}">
                             <span class="unit">점</span>
                             <span style="margin-left: 30px;">회원가입시 권한레벨</span>
-                            <input type="text" class="input-small" value="1">
+                            <input type="text" class="input-small" th:field="*{cNewlevel}" th:readonly="${!adminlevel}">
                             <span class="unit">레벨</span>
                         </div>
                     </div>
@@ -63,19 +63,19 @@
 
             <!-- 홈페이지 기본환경 설정 -->
             <div class="settings-section">
-                <div class="section-header">홈페이지 기본환경 설정</div>
+                <div class="section-header">회사 정보</div>
                 <div class="section-content">
                     <div class="form-row form-row-2col">
                         <div class="form-col">
                             <div class="form-label">회사명</div>
                             <div class="form-input">
-                                <input type="text" class="input-medium" value="">
+                                <input type="text" class="input-medium" th:field="*{cName}" th:readonly="${!adminlevel}">
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-label">사업자등록번호</div>
                             <div class="form-input">
-                                <input type="text" class="input-medium" value="">
+                                <input type="text" class="input-medium" th:field="*{cBusnum}" th:readonly="${!adminlevel}">
                             </div>
                         </div>
                     </div>
@@ -83,13 +83,13 @@
                         <div class="form-col">
                             <div class="form-label">대표자명</div>
                             <div class="form-input">
-                                <input type="text" class="input-medium" value="">
+                                <input type="text" class="input-medium" th:field="*{cMaster}" th:readonly="${!adminlevel}">
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-label">대표전화번호</div>
                             <div class="form-input">
-                                <input type="text" class="input-medium" value="">
+                                <input type="text" class="input-medium" th:field="*{cMastertel}" th:readonly="${!adminlevel}">
                             </div>
                         </div>
                     </div>
@@ -97,13 +97,13 @@
                         <div class="form-col">
                             <div class="form-label">통신판매업 신고번호</div>
                             <div class="form-input">
-                                <input type="text" class="input-medium" value="">
+                                <input type="text" class="input-medium" th:field="*{cMailordernum}" th:readonly="${!adminlevel}">
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-label">부가통신 사업자번호</div>
                             <div class="form-input">
-                                <input type="text" class="input-medium" value="">
+                                <input type="text" class="input-medium" th:field="*{cTelconum}" th:readonly="${!adminlevel}">
                             </div>
                         </div>
                     </div>
@@ -111,13 +111,13 @@
                         <div class="form-col">
                             <div class="form-label">사업장 우편번호</div>
                             <div class="form-input">
-                                <input type="text" class="input-medium" value="">
+                                <input type="text" class="input-medium" th:field="*{cZipcode}" th:readonly="${!adminlevel}">
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-label">사업장 주소</div>
                             <div class="form-input">
-                                <input type="text" class="input-large" value="">
+                                <input type="text" class="input-large" th:field="*{cAddr}" th:readonly="${!adminlevel}">
                             </div>
                         </div>
                     </div>
@@ -125,13 +125,13 @@
                     <div class="form-col">
                         <div class="form-label">정보관리책임자명</div>
                         <div class="form-input">
-                            <input type="text" class="input-medium" value="">
+                            <input type="text" class="input-medium"  th:field="*{cInfomaster}" th:readonly="${!adminlevel}">
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-label">정보책임자 E-mail</div>
                         <div class="form-input">
-                            <input type="email" class="input-large" value="">
+                            <input type="email" class="input-large" th:field="*{cInfomastermail}" th:readonly="${!adminlevel}">
                         </div>
                     </div>
                     </div>
@@ -146,13 +146,13 @@
                         <div class="form-col">
                             <div class="form-label">무통장 은행</div>
                             <div class="form-input">
-                                <input type="text" class="input-medium" value="">
+                                <input type="text" class="input-medium" th:field="*{cBank}" th:readonly="${!adminlevel}">
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-label">은행계좌번호</div>
                             <div class="form-input">
-                                <input type="text" class="input-large" value="">
+                                <input type="text" class="input-large" th:field="*{cAccount}" th:readonly="${!adminlevel}">
                             </div>
                         </div>
                     </div>
@@ -161,12 +161,12 @@
                         <div class="form-input">
                             <div class="radio-group">
                                 <div class="radio-item">
-                                    <input type="radio" id="card_use" name="card_usage" value="use">
-                                    <label for="card_use">사용</label>
+                                    <input type="radio" th:field="*{cCarduse}" value="Y" th:disabled="${!adminlevel}">
+                                    <label th:for="${#ids.prev('cCarduse')}">사용</label>
                                 </div>
                                 <div class="radio-item">
-                                    <input type="radio" id="card_not_use" name="card_usage" value="not_use" checked>
-                                    <label for="card_not_use">미사용</label>
+                                    <input type="radio" th:field="*{cCarduse}" value="N" th:disabled="${!adminlevel}">
+                                    <label th:for="${#ids.prev('cCarduse')}">미사용</label>
                                 </div>
                             </div>
                             <span class="description">※ 해당 PG사가 있을 경우 사용으로 변경합니다.</span>
@@ -177,12 +177,12 @@
                         <div class="form-input">
                             <div class="radio-group">
                                 <div class="radio-item">
-                                    <input type="radio" id="mobile_use" name="mobile_usage" value="use">
-                                    <label for="mobile_use">사용</label>
+                                    <input type="radio" th:field="*{cTelcredituse}" value="Y" th:disabled="${!adminlevel}">
+                                    <label th:for="${#ids.prev('cTelcredituse')}">사용</label>
                                 </div>
                                 <div class="radio-item">
-                                    <input type="radio" id="mobile_not_use" name="mobile_usage" value="not_use" checked>
-                                    <label for="mobile_not_use">미사용</label>
+                                    <input type="radio" th:field="*{cTelcredituse}" value="N" th:disabled="${!adminlevel}">
+                                    <label th:for="${#ids.prev('cTelcredituse')}">미사용</label>
                                 </div>
                             </div>
                             <span class="description">※ 주문시 휴대폰 결제를 가능하게 할 것인지를 설정합니다.</span>
@@ -193,12 +193,12 @@
                         <div class="form-input">
                             <div class="radio-group">
                                 <div class="radio-item">
-                                    <input type="radio" id="gift_use" name="gift_usage" value="use">
-                                    <label for="gift_use">사용</label>
+                                    <input type="radio" th:field="*{cGiftuse}" value="Y" th:disabled="${!adminlevel}">
+                                    <label th:for="${#ids.prev('cGiftuse')}">사용</label>
                                 </div>
                                 <div class="radio-item">
-                                    <input type="radio" id="gift_not_use" name="gift_usage" value="not_use" checked>
-                                    <label for="gift_not_use">미사용</label>
+                                    <input type="radio" th:field="*{cGiftuse}" value="N" th:disabled="${!adminlevel}">
+                                    <label th:for="${#ids.prev('cGiftuse')}">미사용</label>
                                 </div>
                             </div>
                             <span class="description">※ 도서상품권 결제만 적용이 되며, 그 외에 상품권은 결제 되지 않습니다.</span>
@@ -208,14 +208,14 @@
                         <div class="form-col">
                             <div class="form-label">결제 최소 포인트</div>
                             <div class="form-input">
-                                <input type="text" class="input-small" value="">
+                                <input type="text" class="input-small" th:field="*{cPointpaymin}" th:readonly="${!adminlevel}">
                                 <span class="unit">점</span>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-label">결제 최대 포인트</div>
                             <div class="form-input">
-                                <input type="text" class="input-medium" value="">
+                                <input type="text" class="input-medium" th:field="*{cPointpaymax}" th:readonly="${!adminlevel}">
                                 <span class="unit">점</span>
                             </div>
                         </div>
@@ -225,12 +225,12 @@
                         <div class="form-input">
                             <div class="radio-group">
                                 <div class="radio-item">
-                                    <input type="radio" id="receipt_use" name="receipt_usage" value="use">
-                                    <label for="receipt_use">사용</label>
+                                    <input type="radio" th:field="*{cCashreceiptuse}" value="Y" th:disabled="${!adminlevel}">
+                                    <label th:for="${#ids.prev('cCashreceiptuse')}">사용</label>
                                 </div>
                                 <div class="radio-item">
-                                    <input type="radio" id="receipt_not_use" name="receipt_usage" value="not_use" checked>
-                                    <label for="receipt_not_use">미사용</label>
+                                    <input type="radio" th:field="*{cCashreceiptuse}" value="N" th:disabled="${!adminlevel}">
+                                    <label th:for="${#ids.prev('cCashreceiptuse')}">미사용</label>
                                 </div>
                             </div>
                             <span class="description">※ 현금영수증 관련 사항은 PG사 가입이 되었을 경우 사용가능 합니다.</span>
@@ -241,12 +241,14 @@
 
             <!-- 버튼 그룹 -->
             <div class="button-group">
-                <button type="submit" class="btn btn-save">설정 저장</button>
-                <button type="button" class="btn btn-cancel">저장 취소</button>
+                <button type="submit" class="btn btn-save" th:disabled="${!adminlevel}">설정 저장</button>
+                <button type="button" class="btn btn-cancel" onclick="location.reload()">저장 취소</button>
             </div>
         </form>
     </div>
 </div>
+
+
 <script>
 //메뉴 활성화 스크립트
 document.addEventListener('DOMContentLoaded', function() {
@@ -270,7 +272,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
 </script>
+<!-- 수정 결과 메시지 출력 -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+const successMessage = /*[[${successMessage}]]*/ null;
+const errorMessage = /*[[${errorMessage}]]*/ null;
+
+if (successMessage) {
+    alert(successMessage);
+}
+
+if (errorMessage) {
+    alert(errorMessage);
+}
+
+/*]]>*/
+</script>
+<div th:replace="admin_footer :: footer"></div>
 </body>
 </html>

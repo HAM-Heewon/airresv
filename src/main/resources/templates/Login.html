@@ -14,8 +14,7 @@
         <span class="admin-text">ADMINISTRATOR</span>
     </div>
     <div class="login-box">
-        <div th:if="${param.error}" style="color: red; text-align: center; margin-bottom: 15px;">
-            아이디 또는 비밀번호가 올바르지 않습니다.
+        <div th:if="${param.error}" th:text="${param.message}" style="color: red; text-align: center; margin-bottom: 15px;">
         </div>
 
         <form th:action="@{/login}" method="post">

@@ -23,42 +23,36 @@
     font-size: 16px;
     font-weight: bold;
 }
-    .header-right {
-        display: flex;
-        align-items: center; /* 세로 중앙 정렬 */
-        gap: 15px; /* 요소들 간의 간격 */
-        font-size: 14px;
-        color: #ccc;
-    }
-    .header-right a {
-        color: #ccc;
-        text-decoration: none;
-        transition: color 0.2s; /* 부드러운 색상 변경 효과 */
-    }
-    /* [핵심 수정] 폼 자체는 레이아웃에 영향을 주지 않도록 마진/패딩만 제거 */
-    .header-right form {
-        margin: 0;
-        padding: 0;
-    }
-    .logout-btn {
-        /* 버튼의 기본 스타일을 완전히 제거하여 링크처럼 보이게 함 */
-        background: none;
-        border: none;
-        padding: 0;
-        margin: 0;
-        
-        /* a 태그와 동일한 모양으로 만들기 */
-        color: #ccc;
-        cursor: pointer;
-        font-size: inherit; /* 부모(.header-right)로부터 폰트 크기 상속 */
-        font-family: inherit;
-        text-decoration: none;
-        transition: color 0.2s; /* 부드러운 색상 변경 효과 */
-    }
-    /* a 태그와 button에 동일한 hover 효과 적용 */
-    .header-right a:hover,
-    .header-right .logout-btn:hover {
-        color: #fff;
-        text-decoration: underline;
-    }
+   .header-right {
+    font-size: 12px;
+    color: #ccc;
+}
+
+.header-right a {
+    color: #ccc;
+    text-decoration: none;
+    margin: 0 2px;
+}
+.header-right form {
+    display: inline !important;
+    margin: 0;
+    padding: 0;
+}
+/* style="display: inline; margin: 0; padding: 0;" */
+.logout-btn{
+    background: none;
+    color: #ccc;
+    border:none;
+    cursor:pointer;
+    font-size: inherit;
+}
+/* style="background: none; color: #ccc; border: none; cursor: pointer;" */
+.header-right a:hover{
+    color: #fff;
+    text-decoration: underline;
+}
+.header-right form .logout-btn:hover{
+	color: #fff !important;
+	text-decoration: underline;
+}
 /* //background:none; border:none; padding:0; color:blue; cursor:pointer; */

@@ -10,10 +10,16 @@ import kr.co.air.dtos.UsersDto;
 @Mapper
 public interface UserMapper {
 	
+	//로그인
 	UsersDto findByUsername(String adminId);
-    
-	UsersDto findusers(String adminId);
 	List<UsersDto> findallusers();
 	
+	//관리자 승인
 	void updateAdminAgree(@Param("adIdx") Long adIdx, @Param("adminAgree") String adminAgree);
+	
+	//관리자 회원가입
+	void insertAdmin(UsersDto dto);
+	//아이디 중복 확인
+	int checkid(String adminId);
+
 }
