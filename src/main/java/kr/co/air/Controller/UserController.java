@@ -1,5 +1,7 @@
 package kr.co.air.Controller;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
@@ -23,15 +25,17 @@ public class UserController {
     private final UserMapper usermapper;
     
     @GetMapping("/login")
-    public String loginPage(Model model, 
-                           @RequestParam(value = "error", required = false) String error,
-                           @RequestParam(value = "message", required = false) String message) {
-        
-        // message 파라미터에서 실제 에러 메시지 가져오기
-        if (message != null && !message.isEmpty()) {
-            model.addAttribute("loginError", message);
+    public String loginPage(HttpServletRequest request, Model model) {
+        // 세션에서 에러 메시지 확인
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            String errorMessage = (String) session.getAttribute("loginError");
+            if (errorMessage != null) {
+                model.addAttribute("errorMessage", errorMessage);
+                model.addAttribute("hasError", true);
+                session.removeAttribute("loginError"); // 사용 후 제거
+            }
         }
-        
         return "login";
     }
 

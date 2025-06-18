@@ -57,4 +57,13 @@ ORDER BY AD_IDX DESC
 <select id="checkid" parameterType="String" resultType="int">
     SELECT COUNT(*) FROM ADMIN_USERS WHERE ADMIN_ID = #{adminId}
 </select>
+
+
+<!-- 공지사항 : 사용자 이름으로 AD_IDX 조회 -->
+<select id="findAdIdx" parameterType="String" resultType="long">
+    SELECT AD_IDX 
+    FROM ADMIN_USERS 
+    WHERE ADMIN_ID = #{adminId}
+    LIMIT 1
+</select>
 </mapper>

@@ -21,5 +21,8 @@ public interface UserMapper {
 	void insertAdmin(UsersDto dto);
 	//아이디 중복 확인
 	int checkid(String adminId);
+	
+	//공지사항 : 사용자이름으로 idx 조회
+	Long findAdIdx(String adminId);
 
 }

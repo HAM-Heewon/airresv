@@ -16,26 +16,6 @@ public class AirController {
     	return "/Login";
     }
     
-    @GetMapping("/notice")
-    public String notice() {
-    	return "notice_list";
-    }
-    
-    @GetMapping("/notice_write")
-    public String notice_write() {
-    	return "notice_write";
-    }
-    
-    @GetMapping("/notice_view")
-    public String notice_view() {
-    	return "notice_view";
-    }
-    
-    @GetMapping("/notice_update")
-    public String notice_update() {
-    	return "notice_update";
-    }
-    
     @GetMapping("/product_list")
     public String product_list() {
     	return "product_list";
@@ -46,19 +26,6 @@ public class AirController {
     	return "product_new";
     }
 
-    @GetMapping("/air_newcode")
-    public String air_newcode() {
-    	return "air_newcode";
-    }
-
-    @GetMapping("/code_list")
-    public String code_list() {
-    	return "code_list";
-    }
-    @GetMapping("/code_update")
-    public String code_update() {
-    	return "code_update";
-    }
     
     @GetMapping("/ticketing_list")
     public String ticketing_list() {

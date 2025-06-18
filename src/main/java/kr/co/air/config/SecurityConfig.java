@@ -25,7 +25,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/ico/**", "/static/**").permitAll()
                 // 회원가입 페이지 경로와 아이디 중복확인 API 경로는 모두 허용
-                .requestMatchers("/add_master", "/logon", "/admin_req", "/admin/check_id").permitAll() 
+                .requestMatchers("/add_master", "/logon", "/admin_req", "/admin/check_id", "air-**").permitAll() 
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/notice/delete/**").hasRole("관리자")
                 .requestMatchers("/admin_list").authenticated() 
                 .anyRequest().authenticated()
             )

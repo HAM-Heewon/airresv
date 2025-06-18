@@ -98,13 +98,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // 항공편 관리 메뉴 활성화
-    menuItems.forEach(item => {
-        const href = item.getAttribute('href');
-        
-        if (href === '/air_newcode' || href.includes('air')) {
-            item.classList.add('active');
-        }
-    });
+    if (currentPath.includes('code')) {
+        menuItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href.includes('code')) {
+                item.classList.add('active');
+            }
+        });
+    }
 });
 
 // 공항코드 대문자 변환
@@ -128,31 +129,32 @@ document.getElementById('flightCode').addEventListener('input', function() {
     this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
 });
 
-// 항공편명 한글 제거 (영문만 허용)
-document.getElementById('flightName').addEventListener('input', function() {
-    this.value = this.value.replace(/[가-힣]/g, '');
-});
-
 // 중복 확인
 function checkDuplicate() {
-    const flightCode = document.getElementById('flightCode').value.trim();
+	const flightCodeInput = document.getElementById('flightCode');
+    const flightCode = flightCodeInput.value.trim();
     
     if (!flightCode) {
         alert('항공편코드를 먼저 입력해주세요.');
-        document.getElementById('flightCode').focus();
+        flightCodeInput.focus();
         return;
     }
     
-    // 실제 구현시 서버에서 중복 검사
-    // 예시: 기존 코드 목록
-    const existingCodes = ['KE017', 'OZ123', '7C001', 'LJ456'];
-    
-    if (existingCodes.includes(flightCode)) {
-        alert('이미 존재하는 항공편코드입니다. 다른 코드를 입력해주세요.');
-        document.getElementById('flightCode').focus();
-    } else {
-        alert('사용 가능한 항공편코드입니다.');
-    }
+    // fetch API를 사용하여 서버에 중복 검사 요청
+    fetch(`/air-codes/check?flightCode=${flightCode}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.isDuplicate) {
+                alert('이미 존재하는 항공편코드입니다. 다른 코드를 입력해주세요.');
+                flightCodeInput.focus();
+            } else {
+                alert('사용 가능한 항공편코드입니다.');
+            }
+        })
+        .catch(error => {
+            console.error('중복 확인 중 오류 발생:', error);
+            alert('중복 확인 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        });
 }
 
 // 폼 제출 처리
@@ -167,59 +169,61 @@ function submitForm(event) {
     const flightCode = document.getElementById('flightCode').value.trim();
     const flightName = document.getElementById('flightName').value.trim();
     
-    // 필수 입력값 검사
     if (!airportCode) {
         alert('공항코드를 입력해주세요.');
         document.getElementById('airportCode').focus();
         return false;
     }
-    
-    if (airportCode.length < 3) {
-        alert('공항코드는 최소 3자 이상 입력해주세요.');
-        document.getElementById('airportCode').focus();
-        return false;
-    }
-    
     if (!airlineName) {
         alert('항공사명을 입력해주세요.');
         document.getElementById('airlineName').focus();
         return false;
     }
-    
     if (!flightCode) {
         alert('항공편코드를 입력해주세요.');
         document.getElementById('flightCode').focus();
         return false;
     }
-    
     if (!flightName) {
         alert('항공편명을 입력해주세요.');
         document.getElementById('flightName').focus();
         return false;
     }
-    
-    // 한글 검사
-    if (/[가-힣]/.test(flightName)) {
-        alert('항공편명에는 한글을 입력할 수 없습니다.');
-        document.getElementById('flightName').focus();
-        return false;
-    }
-    
-    // 폼 데이터 수집
     const formData = {
-        airportCode: airportCode,
-        airlineName: airlineName,
-        flightCode: flightCode,
-        flightName: flightName,
-        useStatus: document.querySelector('input[name="useStatus"]:checked').value
-    };
+            airportCode: airportCode,
+            airlineName: airlineName,
+            flightCode: flightCode,
+            flightName: flightName,
+            useStatus: document.querySelector('input[name="useStatus"]:checked').value
+        };
     
-    console.log('등록할 항공 코드 데이터:', formData);
-    
-    // 실제 구현시 AJAX로 서버에 전송
     if (confirm('항공 코드를 생성하시겠습니까?')) {
-        alert('항공 코드가 성공적으로 생성되었습니다.');
-        location.href = '/product_list';
+        // fetch API를 사용하여 서버에 항공 코드 생성 요청
+        fetch('/air-codes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                // 서버에서 실패 응답을 보냈을 경우
+                return response.text().then(text => { throw new Error(text) });
+            }
+            // 성공 응답일 경우
+            return response.text();
+        })
+        .then(successMessage => {
+            alert(successMessage);
+
+            // 성공 시 항공 코드 리스트 페이지로 이동 (기존에는 product_list였으나, code_list로 추정하여 변경)
+            location.href = '/code_list'; 
+        })
+        .catch(error => {
+            console.error('항공 코드 생성 중 오류 발생:', error);
+            alert(error.message || '항공 코드 생성 중 오류가 발생했습니다.');
+        });
     }
     
     return false;

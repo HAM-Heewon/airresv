@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>항공 코드 관리</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link rel="stylesheet" type="text/css" href="./css/head_menu.css">
-<link rel="stylesheet" type="text/css" href="./css/code_list.css">
+<link rel="stylesheet" type="text/css" th:href="@{/css/head_menu.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/css/code_list.css}">
 </head>
 <body>
 <div class="container">
@@ -19,16 +19,16 @@
         
         <!-- 검색 영역 -->
         <div class="search-container">
-            <div class="search-content">
-                <div class="search-info">등록된 항공 코드 0건</div>
+            <form action="/code_list" method="get" class="search-content">
+                <div class="search-info" th:text="|등록된 항공 코드 ${#lists.size(airCodeList)}건|">등록된 항공 코드 0건</div>
                 <div class="search-box">
-                    <select class="search-select">
+                    <select name="searchType" class="search-select">
                         <option value="flight_code">항공코드</option>
                     </select>
-                    <input type="text" class="search-input" placeholder="검색어를 입력해 주세요">
-                    <button type="button" class="search-btn">검색</button>
+                    <input type="text" name="searchKeyword" class="search-input" placeholder="검색어를 입력해 주세요" th:value="${searchKeyword}">
+                    <button type="submit" class="search-btn">검색</button>
                 </div>
-            </div>
+            </form>
         </div>
         
         <!-- 항공편 테이블 -->
@@ -47,26 +47,20 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- 데이터가 없을 때 -->
-                <tr class="no-data-row">
-                    <td colspan="11" class="no-data">등록된 항공 코드가 없습니다.</td>
+                <tr th:if="${#lists.isEmpty(airCodeList)}">
+                    <td colspan="7" class="no-data">등록된 항공 코드가 없습니다.</td>
                 </tr>
                 
-                <!-- 샘플 데이터 -->
-                <tr style="display: none;">
-                    <td><input type="checkbox" name="airlineIds" value="1"></td>
-                    <td>GMP</td>
-                    <td>대한항공</td>
-                    <td>KE017</td>
-                    <td>Korean Air</td>
-                    <td>한국</td>
-                    <td>중국</td>
-                    <td>일반석</td>
-                    <td>80</td>
-                    <td>Y</td>
+                <tr th:each="code : ${airCodeList}">
+                    <td><input type="checkbox" name="airCodeIds" class="code-checkbox" th:value="${code.airIdx}"></td>
+                    <td th:text="${code.airportCode}">GMP</td>
+                    <td th:text="${code.airlineName}">대한항공</td>
+                    <td th:text="${code.flightCode}">KE017</td>
+                    <td th:text="${code.flightName}">Korean Air</td>
+                    <td th:text="${code.useStatus}">사용함</td>
                     <td>
-                        <button type="button" class="btn-small btn-edit" onclick="editAirline(1)">수정</button>
-                        <button type="button" class="btn-small btn-delete" onclick="deleteAirline(1)">삭제</button>
+                        <button type="button" class="btn-small btn-edit" th:onclick="|editAirline(${code.airIdx})|">수정</button>
+                        <button type="button" class="btn-small btn-delete" th:onclick="|deleteAirline(${code.airIdx})|">삭제</button>
                     </td>
                 </tr>
             </tbody>
@@ -112,29 +106,59 @@ document.addEventListener('DOMContentLoaded', function() {
             item.classList.add('active');
         }
     });
+    
+    const codeCheckboxes = document.querySelectorAll('.code-checkbox');
+    codeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectAllCheckbox);
+    });
+    updateSelectAllCheckbox();
 });
 
 // 전체 선택/해제
 function toggleAll(source) {
-    const checkboxes = document.querySelectorAll('input[name="airlineIds"]');
+    const checkboxes = document.querySelectorAll('.code-checkbox');
     checkboxes.forEach(checkbox => {
         checkbox.checked = source.checked;
     });
 }
 
-// 선택된 항목 삭제
+//공통 삭제 요청 함수
+function requestDelete(ids) {
+    fetch('/air-codes/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ids)
+    })
+    .then(response => {
+        if (!response.ok) return response.text().then(text => { throw new Error(text) });
+        return response.text();
+    })
+    .then(message => {
+        alert(message);
+        location.reload();
+    })
+    .catch(error => {
+        alert(error.message || '삭제 중 오류가 발생했습니다.');
+    });
+}
+
+//코드 복수 삭제
 function deleteSelected() {
-    const checkedBoxes = document.querySelectorAll('input[name="airlineIds"]:checked');
-    
+    const checkedBoxes = document.querySelectorAll('input[name="airCodeIds"]:checked');
     if (checkedBoxes.length === 0) {
-        alert('삭제할 항공편을 선택해주세요.');
+        alert('삭제할 항목을 선택해주세요.');
         return;
     }
-    
-    if (confirm(`선택된 ${checkedBoxes.length}개의 항공편을 삭제하시겠습니까?`)) {
-        // 실제 구현시 AJAX로 삭제 처리
-        alert('선택된 항공편이 삭제되었습니다.');
-        location.reload();
+    if (confirm(`선택된 ${checkedBoxes.length}개의 항공 코드를 삭제하시겠습니까?`)) {
+        const idsToDelete = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+        requestDelete(idsToDelete);
+    }
+}
+
+//단일 항공 코드 삭제
+function deleteAirline(id) {
+    if (confirm('이 항공 코드를 삭제하시겠습니까?')) {
+        requestDelete([id]);
     }
 }
 
@@ -143,25 +167,13 @@ function editAirline(id) {
     location.href = `/admin/airlines/edit/${id}`;
 }
 
-// 개별 항목 삭제
-function deleteAirline(id) {
-    if (confirm('이 항공편을 삭제하시겠습니까?')) {
-        // 실제 구현시 AJAX로 삭제 처리
-        alert('항공편이 삭제되었습니다.');
-        location.reload();
-    }
-}
+
 
 // 검색 기능
 document.querySelector('.search-btn').addEventListener('click', function() {
     const searchType = document.querySelector('.search-select').value;
     const searchKeyword = document.querySelector('.search-input').value.trim();
-    
-    if (!searchKeyword) {
-        alert('검색어를 입력해주세요.');
-        return;
-    }
-    
+
     // 실제 구현시 검색 로직 추가
     console.log('검색 타입:', searchType);
     console.log('검색어:', searchKeyword);
@@ -181,12 +193,22 @@ document.querySelector('.search-btn').addEventListener('click', function() {
     }
 });
 
-// 엔터키 검색
-document.querySelector('.search-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        document.querySelector('.search-btn').click();
+function updateSelectAllCheckbox() {
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const noticeCheckboxes = document.querySelectorAll('input[name="airCodeIds"]');
+    const checkedCount = document.querySelectorAll('input[name="airCodeIds"]:checked').length;
+    
+    if (checkedCount === 0) {
+        selectAllCheckbox.checked = false;
+
+    } else if (checkedCount === noticeCheckboxes.length) {
+        selectAllCheckbox.checked = true;
+
+    } else {
+        selectAllCheckbox.checked = false;
+
     }
-});
+}
 </script>
 </body>
 </html>

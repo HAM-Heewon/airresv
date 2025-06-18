@@ -82,7 +82,13 @@ body {
     text-align: left;
     padding-left: 10px;
 }
-
+.notice-table td a{
+    text-decoration: none;
+    color: #e0e0e0;
+}
+.notice-table td a:hover{
+	color: white;
+}
 .notice-table tbody tr:hover {
     background-color: #454545 !important;
 }
@@ -90,6 +96,7 @@ body {
 .notice-table tbody tr:hover td {
     background-color: #454545 !important;
 }
+
 
 .no-data {
     text-align: center !important;
@@ -122,18 +129,6 @@ body {
 
 .views-col {
     width: 60px;
-}
-
-.notice-badge {
-    background: #dc3545;
-    color: white;
-    padding: 1px 6px;
-    border-radius: 50%;
-    font-size: 11px;
-    margin-right: 6px;
-    display: inline-block;
-    min-width: 18px;
-    text-align: center;
 }
 
 .button-group {
