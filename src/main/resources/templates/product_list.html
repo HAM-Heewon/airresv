@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>항공편 관리</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link rel="stylesheet" type="text/css" href="./css/head_menu.css">
-<link rel="stylesheet" type="text/css" href="./css/product_list.css">
+<link rel="stylesheet" type="text/css" th:href="@{/css/head_menu.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/css/product_list.css}">
 </head>
 <body>
 <div class="container">
@@ -18,18 +18,19 @@
         <h2 class="section-title">항공편 관리 페이지</h2>
         
         <!-- 검색 영역 -->
-        <div class="search-container">
+        <form th:action="@{/product_list}" method="get" class="search-container">
             <div class="search-content">
-                <div class="search-info">등록된 항공사 0건</div>
+                <div class="search-info">등록된 항공사 <span th:text="${#lists.size(alldata)}">0</span>건</div>
                 <div class="search-box">
-                    <select class="search-select">
+                    <select class="search-select" name="searchType">
+                        <option value="airline_code">공항코드</option>
                         <option value="airline_name">항공사명</option>
                     </select>
-                    <input type="text" class="search-input" placeholder="검색어를 입력해 주세요">
-                    <button type="button" class="search-btn">검색</button>
+                    <input type="text" name="searchKeyword" class="search-input" placeholder="검색어를 입력해 주세요" th:value="${searhKeyword}">
+                    <button type="submit" class="search-btn">검색</button>
                 </div>
             </div>
-        </div>
+        </form>
         
         <!-- 항공편 테이블 -->
         <table class="airline-table">
@@ -52,25 +53,50 @@
             </thead>
             <tbody>
                 <!-- 데이터가 없을 때 -->
-                <tr class="no-data-row">
+                <tr class="no-data-row" th:if="${#lists.isEmpty(alldata)}">
                     <td colspan="11" class="no-data">등록된 항공편이 없습니다.</td>
                 </tr>
                 
-                <!-- 샘플 데이터 -->
-                <tr style="display: none;">
-                    <td><input type="checkbox" name="airlineIds" value="1"></td>
-                    <td>GMP</td>
-                    <td>대한항공</td>
-                    <td>KE017</td>
-                    <td>Korean Air</td>
-                    <td>한국</td>
-                    <td>중국</td>
-                    <td>일반석</td>
-                    <td>80</td>
-                    <td>Y</td>
+               <tr th:each="schedule, iterStat : ${alldata}" th:unless="${#lists.isEmpty(alldata)}">
                     <td>
-                        <button type="button" class="btn-small btn-edit" onclick="editAirline(1)">수정</button>
-                        <button type="button" class="btn-small btn-delete" onclick="deleteAirline(1)">삭제</button>
+                        <input type="checkbox" class="product-checkbox" name="scheduleIds" th:value="${schedule.scheduleIdx}">
+                    </td>
+                    <td th:text="${schedule.airportCd}">GMP</td>
+                    <td th:text="${schedule.airlineNm}">대한항공</td>
+                    <td th:text="${schedule.flightCd}">KE017</td>
+                    <td th:text="${schedule.flightNm}">Korean Air</td>
+                    <td th:text="${schedule.departureNm}">한국</td>
+                    <td th:text="${schedule.arrivalNm}">중국</td>
+                    <td>
+                        <!-- 좌석 형태 정보 표시 -->
+                        <div th:if="${!#lists.isEmpty(schedule.seatTypes)}" class="seat-info">
+                            <div th:each="seat : ${schedule.seatTypes}" class="seat-type-info">
+                                <span th:text="${seat.seatTypeName}">일반석</span><br>
+                                <small th:text="'(' + ${#numbers.formatInteger(seat.seatTypePrice, 0, 'COMMA')} + '원)'"></small>
+                            </div>
+                        </div>
+                        <span th:if="${#lists.isEmpty(schedule.seatTypes)}" class="no-seat-info">-</span>
+                    </td>
+                    <td>
+                        <!-- 좌석수 정보 표시 -->
+                        <div th:if="${!#lists.isEmpty(schedule.seatTypes)}" class="seat-count-info">
+                            <div class="total-seats">
+                                <strong>총 <span th:text="${schedule.totalSeats}">80</span>석</strong>
+                            </div>
+                        </div>
+                        <span th:if="${#lists.isEmpty(schedule.seatTypes)}" th:text="${schedule.totalSeats}">0</span>
+                    </td>
+                    <td>
+                        <span th:text="${schedule.flightStatus}" 
+                              th:class="${schedule.flightStatus == '운행가능'} ? 'status-active' : 'status-inactive'">
+                            운행가능
+                        </span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn-small btn-edit" 
+                                th:onclick="'editSchedule(' + ${schedule.scheduleIdx} + ')'">수정</button>
+                        <button type="button" class="btn-small btn-delete" 
+                                th:onclick="|deleteSchedule(${schedule.scheduleIdx} )|">삭제</button>
                     </td>
                 </tr>
             </tbody>
@@ -113,23 +139,74 @@ document.addEventListener('DOMContentLoaded', function() {
     menuItems.forEach(item => {
         const href = item.getAttribute('href');
         
-        if (href === '/product_list' || href.includes('airlines')) {
+        if (href === '/product_list' || href.includes('product')) {
             item.classList.add('active');
         }
     });
+    
+    const codeCheckboxes = document.querySelectorAll('.product-checkbox');
+    codeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectAllCheckbox);
+    });
+    updateSelectAllCheckbox();
+});
+
+//검색 기능
+document.querySelector('.search-btn').addEventListener('click', function() {
+    const searchType = document.querySelector('.search-select').value;
+    const searchKeyword = document.querySelector('.search-input').value.trim();
+    
 });
 
 // 전체 선택/해제
 function toggleAll(source) {
-    const checkboxes = document.querySelectorAll('input[name="airlineIds"]');
+    const checkboxes = document.querySelectorAll('input[name="scheduleIds"]');
     checkboxes.forEach(checkbox => {
         checkbox.checked = source.checked;
     });
 }
 
+function updateSelectAllCheckbox() {
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const productCheckboxes = document.querySelectorAll('input[name="scheduleIds"]');
+    const checkedCount = document.querySelectorAll('input[name="scheduleIds"]:checked').length;
+    
+    if (checkedCount === 0) {
+        selectAllCheckbox.checked = false;
+
+    } else if (checkedCount === productCheckboxes.length) {
+        selectAllCheckbox.checked = true;
+
+    } else {
+        selectAllCheckbox.checked = false;
+
+    }
+}
+
+//공통 삭제 요청 함수
+function requestDelete(ids) {
+    fetch('/product/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ids)
+    })
+    .then(response => {
+        if (!response.ok) return response.text().then(text => { throw new Error(text) });
+        return response.text();
+    })
+    .then(message => {
+        alert(message);
+        location.reload();
+    })
+    .catch(error => {
+        alert(error.message || '삭제 중 오류가 발생했습니다.');
+    });
+}
+
+
 // 선택된 항목 삭제
 function deleteSelected() {
-    const checkedBoxes = document.querySelectorAll('input[name="airlineIds"]:checked');
+    const checkedBoxes = document.querySelectorAll('input[name="scheduleIds"]:checked');
     
     if (checkedBoxes.length === 0) {
         alert('삭제할 항공편을 선택해주세요.');
@@ -137,9 +214,15 @@ function deleteSelected() {
     }
     
     if (confirm(`선택된 ${checkedBoxes.length}개의 항공편을 삭제하시겠습니까?`)) {
-        // 실제 구현시 AJAX로 삭제 처리
-        alert('선택된 항공편이 삭제되었습니다.');
-        location.reload();
+    	 const scheduleIdx = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+         requestDelete(scheduleIdx);
+    }
+}
+//개별 항목 삭제
+function deleteSchedule(id) {
+    if (confirm('이 항공편을 삭제하시겠습니까?')) {
+        requestDelete([id]);
+        alert('항공편이 삭제되었습니다.');
     }
 }
 
@@ -148,50 +231,9 @@ function editAirline(id) {
     location.href = `/admin/airlines/edit/${id}`;
 }
 
-// 개별 항목 삭제
-function deleteAirline(id) {
-    if (confirm('이 항공편을 삭제하시겠습니까?')) {
-        // 실제 구현시 AJAX로 삭제 처리
-        alert('항공편이 삭제되었습니다.');
-        location.reload();
-    }
-}
 
-// 검색 기능
-document.querySelector('.search-btn').addEventListener('click', function() {
-    const searchType = document.querySelector('.search-select').value;
-    const searchKeyword = document.querySelector('.search-input').value.trim();
-    
-    if (!searchKeyword) {
-        alert('검색어를 입력해주세요.');
-        return;
-    }
-    
-    // 실제 구현시 검색 로직 추가
-    console.log('검색 타입:', searchType);
-    console.log('검색어:', searchKeyword);
-    
-    // 샘플 데이터 표시/숨김 (실제로는 서버에서 데이터 조회)
-    const noDataRow = document.querySelector('.no-data-row');
-    const sampleRow = document.querySelector('tr[style="display: none;"]');
-    
-    if (searchKeyword.includes('GMP') || searchKeyword.includes('대한') || searchKeyword.includes('KE017')) {
-        noDataRow.style.display = 'none';
-        sampleRow.style.display = 'table-row';
-        document.querySelector('.search-info').textContent = '등록된 항공사 1건';
-    } else {
-        noDataRow.style.display = 'table-row';
-        sampleRow.style.display = 'none';
-        document.querySelector('.search-info').textContent = '등록된 항공사 0건';
-    }
-});
 
-// 엔터키 검색
-document.querySelector('.search-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        document.querySelector('.search-btn').click();
-    }
-});
+
 </script>
 </body>
 </html>

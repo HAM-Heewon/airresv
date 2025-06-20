@@ -159,6 +159,7 @@ function deleteSelected() {
 function deleteAirline(id) {
     if (confirm('이 항공 코드를 삭제하시겠습니까?')) {
         requestDelete([id]);
+        alert('항공 코드가 삭제되었습니다.');
     }
 }
 
@@ -174,34 +175,17 @@ document.querySelector('.search-btn').addEventListener('click', function() {
     const searchType = document.querySelector('.search-select').value;
     const searchKeyword = document.querySelector('.search-input').value.trim();
 
-    // 실제 구현시 검색 로직 추가
-    console.log('검색 타입:', searchType);
-    console.log('검색어:', searchKeyword);
-    
-    // 샘플 데이터 표시/숨김 (실제로는 서버에서 데이터 조회)
-    const noDataRow = document.querySelector('.no-data-row');
-    const sampleRow = document.querySelector('tr[style="display: none;"]');
-    
-    if (searchKeyword.includes('GMP') || searchKeyword.includes('대한') || searchKeyword.includes('KE017')) {
-        noDataRow.style.display = 'none';
-        sampleRow.style.display = 'table-row';
-        document.querySelector('.search-info').textContent = '등록된 항공사 1건';
-    } else {
-        noDataRow.style.display = 'table-row';
-        sampleRow.style.display = 'none';
-        document.querySelector('.search-info').textContent = '등록된 항공사 0건';
-    }
 });
 
 function updateSelectAllCheckbox() {
     const selectAllCheckbox = document.getElementById('selectAll');
-    const noticeCheckboxes = document.querySelectorAll('input[name="airCodeIds"]');
+    const codesCheckboxes = document.querySelectorAll('input[name="airCodeIds"]');
     const checkedCount = document.querySelectorAll('input[name="airCodeIds"]:checked').length;
     
     if (checkedCount === 0) {
         selectAllCheckbox.checked = false;
 
-    } else if (checkedCount === noticeCheckboxes.length) {
+    } else if (checkedCount === codesCheckboxes.length) {
         selectAllCheckbox.checked = true;
 
     } else {

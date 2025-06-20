@@ -4,14 +4,13 @@
 <meta charset="UTF-8">
 <title>항공편 및 번호 등록</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link rel="stylesheet" type="text/css" href="./css/head_menu.css">
-<link rel="stylesheet" type="text/css" href="./css/product_new.css">
+<link rel="stylesheet" type="text/css" th:href="@{/css/head_menu.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/css/product_new.css}">
 </head>
 <body>
 <div class="container">
-    <div th:replace="admin_header :: header"></div>
-    
-    <div th:replace="admin_menu :: menu"></div>
+    <div th:replace="~{admin_header :: header}"></div>
+    <div th:replace="~{admin_menu :: menu}"></div>
     
     <!-- 메인 콘텐츠 -->
     <div class="content">
@@ -19,18 +18,15 @@
         
         <!-- 등록 폼 -->
         <div class="registration-form">
-            <form id="airlineForm" onsubmit="return submitForm(event)">
+            <form id="frm" th:object="${frm}" method="post">
                 
                 <!-- 항공코드 -->
                 <div class="form-row">
                     <label class="form-label">공항코드</label>
                     <div class="form-input">
-                        <select class="form-select" name="airlineCode" id="airlineCode">
+                        <select class="form-select" th:field="*{airportCd}" id="airportCodeSelect">
                             <option value="">공항코드를 선택해세요</option>
-                            <option value="GMP">GMP - 김포국제공항</option>
-                            <option value="ICN">ICN - 인천국제공항</option>
-                            <option value="PUS">PUS - 김해국제공항</option>
-                            <option value="CJU">CJU - 제주국제공항</option>
+                            <option th:each="code : ${portCode}" th:value="${code}" th:text="${code}"></option>
                         </select>
                     </div>
                 </div>
@@ -39,13 +35,8 @@
                 <div class="form-row">
                     <label class="form-label">항공사명</label>
                     <div class="form-input">
-                        <select class="form-select" name="airlineName" id="airlineName">
-                            <option value="">항공사명을 선택해세요</option>
-                            <option value="대한항공">대한항공</option>
-                            <option value="아시아나항공">아시아나항공</option>
-                            <option value="제주항공">제주항공</option>
-                            <option value="진에어">진에어</option>
-                            <option value="티웨이항공">티웨이항공</option>
+                        <select class="form-select" th:field="*{airlineNm}" id="airlineNameSelect" disabled>
+                            <option value="">공항코드를 먼저 선택하세요</option>
                         </select>
                     </div>
                 </div>
@@ -54,13 +45,8 @@
                 <div class="form-row">
                     <label class="form-label">항공코드</label>
                     <div class="form-input">
-                        <select class="form-select" name="flightCode" id="flightCode">
-                            <option value="">항공코드를 선택해세요</option>
-                            <option value="KE">KE - 대한항공</option>
-                            <option value="OZ">OZ - 아시아나항공</option>
-                            <option value="7C">7C - 제주항공</option>
-                            <option value="LJ">LJ - 진에어</option>
-                            <option value="TW">TW - 티웨이항공</option>
+                        <select class="form-select" th:field="*{flightCd}" id="flightCodeSelect" disabled>
+                            <option value="">항공사명을 먼저 선택하세요</option>
                         </select>
                         <button type="button" class="btn-code" onclick="openCodeManager()">항공 코드 등록</button>
                         <span class="code-note">※ 항공코드는 절대 중복되지 않도록 합니다.</span>
@@ -71,7 +57,7 @@
                 <div class="form-row">
                     <label class="form-label">항공편명</label>
                     <div class="form-input">
-                        <input type="text" class="form-text" name="flightName" id="flightName" placeholder="항공편명을 입력하세요">
+                        <input type="text" class="form-text" th:field="*{flightNm}" id="flightNameInput" placeholder="항공코드 선택 시 자동 입력" readonly>
                     </div>
                 </div>
                 
@@ -79,7 +65,7 @@
                 <div class="form-row">
                     <label class="form-label">출발지</label>
                     <div class="form-input">
-                        <input type="text" class="form-text-small" name="departure" id="departure">
+                        <input type="text" class="form-text-small" th:field="*{departureNm}" placeholder="출발지 입력">
                         <span class="input-note">※ 출발지와 도착지가 같을 수 없습니다.</span>
                     </div>
                 </div>
@@ -88,7 +74,7 @@
                 <div class="form-row">
                     <label class="form-label">도착지</label>
                     <div class="form-input">
-                        <input type="text" class="form-text-small" name="arrival" id="arrival">
+                        <input type="text" class="form-text-small" th:field="*{arrivalNm}" placeholder="도착지 입력">
                         <span class="input-note">※ 출발지와 도착지가 같을 수 없습니다.</span>
                     </div>
                 </div>
@@ -98,13 +84,16 @@
                     <label class="form-label">좌석 형태 및 가격</label>
                     <div class="form-input" style="flex-direction: column; align-items: flex-start; gap: 8px;">
                         <div id="seatTypeContainer" style="width: 100%;">
-                            <!-- 좌석 형태와 가격 입력 필드가 동적으로 추가될 영역 -->
-                            <div class="seat-type-item">
+                            
+                            <div id="seatTypeContainer" style="width: 100%;">
+                            
+                             </div>
+                            <!-- <div class="seat-type-item">
                                 <input type="text" class="form-text-small seat-type-name" placeholder="좌석 형태명 (예: 일반석, 프레스티지석, 일등석, 비지니스석)">
                                 <input type="number" class="form-text-number seat-type-price" placeholder="가격" min="0" step="100">
                                 <span class="unit">원</span>
                                 <button type="button" class="btn-remove-seat" onclick="removeSeatTypeField(this)">삭제</button>
-                            </div>
+                            </div> -->
                         </div>
                         <button type="button" class="btn-add-seat-type" onclick="addSeatTypeField()">+ 좌석 형태 추가</button>
                     </div>
@@ -114,7 +103,7 @@
                 <div class="form-row">
                     <label class="form-label">좌석수</label>
                     <div class="form-input">
-                        <input type="number" class="form-text-number" name="seatCount" id="seatCount" value="0" min="0">
+                        <input type="number" class="form-text-number" th:field="*{totalSeats}" id="seatCount" value="0" min="0">
                         <span class="unit">EA</span>
                         <span class="input-note">※ 숫자만 입력하세요, 재고가 0일 경우 soldout이 됩니다.</span>
                     </div>
@@ -123,14 +112,14 @@
                 <!-- 비행시간 -->
                 <div class="form-row">
                     <div class="form-input">
-                       <label class="form-label">비행시간</label>
+                       <label class="form-label">운행 상태</label>
                         <div class="radio-group">
                             <label class="radio-item">
-                                <input type="radio" name="flightTime" value="운행가능" checked>
+                                <input type="radio" th:field="*{flightStatus}" value="운행가능" checked>
                                 <span>운행가능</span>
                             </label>
                             <label class="radio-item">
-                                <input type="radio" name="flightTime" value="운행중단">
+                                <input type="radio" th:field="*{flightStatus}" value="운행종료">
                                 <span>운행종료</span>
                             </label>
                         </div>
@@ -144,105 +133,225 @@
         <!-- 버튼 그룹 -->
         <div class="button-group">
             <button type="button" class="btn btn-list" onclick="location.href='/product_list'">항공편 리스트</button>
-            <button type="button" class="btn btn-register" onclick="submitForm(event)">신규항공편 등록</button>
+            <button type="button" class="btn btn-register" onclick="validateAndSubmitForm()">신규항공편 등록</button>
         </div>
     </div>
 </div>
 <div th:replace="admin_footer :: footer"></div>
 
 <script>
-// 메뉴 활성화 스크립트
-document.addEventListener('DOMContentLoaded', function() {
-    const currentPath = window.location.pathname;
-    const menuItems = document.querySelectorAll('.menu-item');
-    
-    // 모든 메뉴에서 active 클래스 제거
-    menuItems.forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // 항공편 관리 메뉴 활성화
-    menuItems.forEach(item => {
-        const href = item.getAttribute('href');
-        
-        if (href === '/product_new' || href.includes('product')) {
-            item.classList.add('active');
-        }
-    });
-    
- // 페이지 로드 시 최소 하나의 좌석 형태 입력 필드 확인
-    const seatTypeContainer = document.getElementById('seatTypeContainer');
-    if (seatTypeContainer.children.length === 0) {
-        addSeatTypeField(); // 없으면 하나 추가
-    }
-});
+let seatTypeIndex = 0;
 
-// 항공코드 관리 페이지 열기
-function openCodeManager() {
-    // 실제 구현시 항공코드 관리 페이지로 이동
-    location.href = '/air_newcode';
-}
-
-//좌석 형태 및 가격 필드 추가 함수
 function addSeatTypeField() {
     const container = document.getElementById('seatTypeContainer');
-    const newSeatTypeItem = document.createElement('div');
-    newSeatTypeItem.className = 'form-input seat-type-item'; // .form-input 클래스도 추가하여 스타일 일관성 유지
-
-    newSeatTypeItem.innerHTML = `
-        <input type="text" class="form-text-small seat-type-name" placeholder="좌석 형태명 (예: 일반석, 프레스티지석, 일등석, 비지니스석)">
-        <input type="number" class="form-text-number seat-type-price" placeholder="가격" min="0" step="100">
+    const newRow = document.createElement('div');
+    newRow.className = 'seat-type-item';
+    
+    newRow.innerHTML = `
+        <input type="text" class="form-text-small seat-type-name" name="seatTypes[${seatTypeIndex}].seatTypeName" placeholder="좌석 형태명 (예: 일반석)">
+        <input type="number" class="form-text-number seat-type-price" name="seatTypes[${seatTypeIndex}].seatTypePrice" placeholder="가격" min="0">
         <span class="unit">원</span>
         <button type="button" class="btn-remove-seat" onclick="removeSeatTypeField(this)">삭제</button>
     `;
-    container.appendChild(newSeatTypeItem);
+    container.appendChild(newRow);
+    seatTypeIndex++;
 }
 
-// 좌석 형태 및 가격 필드 제거 함수
 function removeSeatTypeField(button) {
-    const itemToRemove = button.parentNode;
     const container = document.getElementById('seatTypeContainer');
-    
-    // 마지막 남은 필드는 삭제 못하게 (최소 하나는 있어야 함)
     if (container.children.length > 1) {
-        container.removeChild(itemToRemove);
+        button.closest('.seat-type-item').remove();
     } else {
         alert('최소 하나의 좌석 형태는 등록해야 합니다.');
     }
 }
 
-// 항공사명 변경시 항공편코드 자동 설정
-document.getElementById('airlineName').addEventListener('change', function() {
-    const airlineName = this.value;
-    const flightCodeSelect = document.getElementById('flightCode');
-    
-    // 항공편코드 옵션 초기화
-    flightCodeSelect.value = '';
-    
-    // 항공사명에 따른 항공편코드 자동 선택
-    switch(airlineName) {
-        case '대한항공':
-            flightCodeSelect.value = 'KE';
-            break;
-        case '아시아나항공':
-            flightCodeSelect.value = 'OZ';
-            break;
-        case '제주항공':
-            flightCodeSelect.value = '7C';
-            break;
-        case '진에어':
-            flightCodeSelect.value = 'LJ';
-            break;
-        case '티웨이항공':
-            flightCodeSelect.value = 'TW';
-            break;
-    }
-});
+function validateAndSubmitForm() {
+    const form = document.getElementById('frm');
 
-// 숫자 입력 필드에서 음수 방지
-document.getElementById('seatCount').addEventListener('input', function() {
-    if (this.value < 0) {
-        this.value = 0;
+    if (!form.airportCd.value) {
+        alert("공항코드를 선택해주세요.");
+        form.airportCd.focus();
+        return;
+    }
+    if (!form.airlineNm.value) {
+        alert("항공사명을 선택해주세요.");
+        form.airlineNm.focus();
+        return;
+    }
+    if (!form.flightCd.value) {
+        alert("항공코드를 선택해주세요.");
+        form.flightCd.focus();
+        return;
+    }
+    if (!form.departureNm.value.trim()) {
+        alert("출발지를 입력해주세요.");
+        form.departureNm.focus();
+        return;
+    }
+    if (!form.arrivalNm.value.trim()) {
+        alert("도착지를 입력해주세요.");
+        form.arrivalNm.focus();
+        return;
+    }
+    if (form.departureNm.value.trim() === form.arrivalNm.value.trim()) {
+        alert('출발지와 도착지는 같을 수 없습니다.');
+        return;
+    }
+    const seatItems = document.querySelectorAll('#seatTypeContainer .seat-type-item');
+    if (seatItems.length === 0) {
+        alert('최소 하나의 좌석 형태는 추가해야 합니다.');
+        return;
+    }
+    for (let i = 0; i < seatItems.length; i++) {
+        const typeNameInput = seatItems[i].querySelector('.seat-type-name');
+        const priceInput = seatItems[i].querySelector('.seat-type-price');
+
+        if (!typeNameInput.value.trim()) {
+            alert((i + 1) + "번째 좌석 형태명을 입력해주세요.");
+            typeNameInput.focus();
+            return;
+        }
+        if (!priceInput.value.trim()) {
+            alert((i + 1) + "번째 좌석 가격을 입력해주세요.");
+            priceInput.focus();
+            return;
+        }
+    }
+    if (form.totalSeats.value === "" || parseInt(form.totalSeats.value, 10) < 1) {
+        alert("좌석수는 1 이상의 값이어야 합니다.");
+        form.totalSeats.focus();
+        return;
+    }
+    
+    const schedData = {
+            airportCd: form.airportCd.value,
+            airlineNm: form.airlineNm.value,
+            flightCd: form.flightCd.value,
+            flightNm: form.flightNm.value,
+            departureNm: form.departureNm.value,
+            arrivalNm: form.arrivalNm.value,
+            totalSeats: form.totalSeats.value,
+            flightStatus: document.querySelector('input[name="flightStatus"]:checked').value,
+            seatTypes: []
+        };
+        seatItems.forEach(item => {
+            const seatTypeName = item.querySelector('.seat-type-name').value;
+            const seatTypePrice = item.querySelector('.seat-type-price').value;
+            schedData.seatTypes.push({ seatTypeName, seatTypePrice });
+        });
+
+        // 3. fetch API를 사용하여 서버에 데이터 전송
+        fetch('/product/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(schedData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text || '서버 처리 중 오류가 발생했습니다.') });
+            }
+            return response.text();
+        })
+        .then(successMessage => {
+            alert(successMessage);
+            location.href = '/product_list';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message);
+        });
+}
+function openCodeManager() {
+    location.href = '/air_newcode';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // [수정된 부분] 삭제되었던 메뉴 활성화 스크립트 복원
+    const currentPath = window.location.pathname;
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    menuItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    menuItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if (href && (href === '/product_new' || href.includes('product'))) {
+            item.classList.add('active');
+        }
+    });
+    
+ 
+
+
+    if (document.getElementById('seatTypeContainer').children.length === 0) {
+        addSeatTypeField();
+    }
+    
+    const airportSelect = document.getElementById('airportCodeSelect');
+    const airlineSelect = document.getElementById('airlineNameSelect');
+    const flightSelect = document.getElementById('flightCodeSelect');
+    const flightNameInput = document.getElementById('flightNameInput');
+
+    airportSelect.addEventListener('change', function() {
+        const airportCode = this.value;
+        resetSelect(airlineSelect, '항공사명을 선택하세요');
+        resetSelect(flightSelect, '항공코드를 선택하세요');
+        flightNameInput.value = '';
+
+        if (airportCode) {
+            fetch(`/product/airline?airportCode=${airportCode}`)
+                .then(response => response.json())
+                .then(data => {
+                    populateSelect(airlineSelect, data.map(item => ({ value: item, text: item })));
+                    airlineSelect.disabled = false;
+                });
+        }
+    });
+
+    airlineSelect.addEventListener('change', function() {
+        const airportCode = airportSelect.value;
+        const airlineName = this.value;
+        resetSelect(flightSelect, '항공코드를 선택하세요');
+        flightNameInput.value = '';
+
+        if (airportCode && airlineName) {
+            fetch(`/product/flightname?airportCode=${airportCode}&airlineName=${airlineName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const options = data.map(item => ({
+                        value: item.flightCode,
+                        text: item.flightCode,
+                        'data-flight-name': item.flightName
+                    }));
+                    populateSelect(flightSelect, options);
+                    flightSelect.disabled = false;
+                });
+        }
+    });
+
+    flightSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        flightNameInput.value = selectedOption.getAttribute('data-flight-name') || '';
+    });
+
+    function resetSelect(select, defaultText) {
+        select.innerHTML = `<option value="">${defaultText}</option>`;
+        select.disabled = true;
+    }
+
+    function populateSelect(select, options) {
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.text;
+            if (opt['data-flight-name']) {
+                option.setAttribute('data-flight-name', opt['data-flight-name']);
+            }
+            select.appendChild(option);
+        });
     }
 });
 </script>

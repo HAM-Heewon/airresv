@@ -15,16 +15,6 @@ public class AirController {
     public String home() {
     	return "/Login";
     }
-    
-    @GetMapping("/product_list")
-    public String product_list() {
-    	return "product_list";
-    }
-    
-    @GetMapping("/product_new")
-    public String product_new() {
-    	return "product_new";
-    }
 
     
     @GetMapping("/ticketing_list")
